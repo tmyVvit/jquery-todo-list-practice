@@ -3,6 +3,7 @@
 $(document)
 
     .ready(function () {
+        let todoListType = 'all';
         let todoList = []
 
         function add(){
@@ -10,15 +11,15 @@ $(document)
             todo.id = generateUUID();
             todo.content = $('.input-text').val();
             todo.complete = false;
-            todoList.push(todo);
+            if(todo.content !== "")
+                todoList.push(todo);
             $('.input-text').val("");
             //console.log(todo);
         }
 
-         buildTodoItem =() => {
-           return todoList.map(element =>
-             {return `<li id = ${element.id} class = ${element.complete?"checked":""} >
-        <input name="done-todo" type="checkbox" class="done-todo" ${element.complete?"checked=\"checked\"":""} onchange="change(event)"> ${element.content}</li>`})};
+         buildTodoItem = element =>
+             `<li id = ${element.id} class = ${element.complete?"checked":""} >
+        <input name="done-todo" type="checkbox" class="done-todo" ${element.complete?"checked=\"checked\"":""} onchange="change(event)"> ${element.content}</li>`;
 
 
         $(document).on("click", "ol li", function () {
@@ -40,7 +41,7 @@ $(document)
                             .blur();
                         $(this).attr('contenteditable', 'false');
 
-                        todoList.find(element => element.id === $(this)[0].id).name = $(this).text();}
+                        todoList.find(element => element.id === $(this)[0].id).content = $(this).text();}
 
                 });
         });
@@ -49,7 +50,16 @@ $(document)
             add();
             renderAll();
         });
+        $("#filters li a").click(function (e) {
+            e.preventDefault();
+            const type = $(this).attr("data-filter");
+            todoListType = type;
+            renderAll();
 
+            $("#filters li a").removeClass("selector");
+            $(this).addClass("selector")
+
+        });
 
 
         window.change = (event)=>{
@@ -69,7 +79,24 @@ $(document)
 
         const renderAll = ()=>{
             //console.log(buildTodoItem(todoList))
-            $("ol").html(buildTodoItem());
+            const filterh = (elem)=>[
+                {status: 'all',
+                getStatus : true},
+                {status: 'active',
+                    getStatus: !elem.complete},
+                {status: 'complete',
+                    getStatus: !elem.complete}
+            ].find(elem => elem.filter === todoListType).getStatus;
+
+
+            const final = todoList.filter(elem =>{
+                if(todoListType === 'all') return true;
+                if(todoListType === 'active') return !elem.complete;
+                if(todoListType === 'complete')  return elem.complete;}
+            ).map(elem => buildTodoItem(elem))
+                .reduce((elem1, elem2)=>elem1+elem2, "");
+
+            $("ol").html(final);
         };
 
         function generateUUID() {
