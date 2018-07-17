@@ -9,24 +9,54 @@ $(document)
             todo.complete = false;
             todoList.push(todo);
             $('.input-text').val("");
-            console.log(todo);
+            //console.log(todo);
         }
 
          buildTodoItem =() => {
            return todoList.map(element =>
              {return `<li id = ${element.id} class = ${element.complete?"checked":""}>
-        <input name="done-todo" type="checkbox" class="done-todo"> ${element.content}</li>`})};
+        <input name="done-todo" type="checkbox" class="done-todo" ${element.complete?"checked=\"checked\"":""} onchange="change(event)"> ${element.content}</li>`})};
 
 
 
         $("#button").click(function () {
             add();
-            render();
+            renderAll();
         });
-        
 
-        const render = ()=>{
-            console.log(buildTodoItem(todoList))
+        window.change = (event)=>{
+            console.log(event);
+
+            let changeBox = event.target;
+            console.log(changeBox.parentElement.id);
+            console.log(changeBox);
+            if($(changeBox).is(":checked")){
+                todoList.forEach(elem=>{if(elem.id == $(changeBox).parent()[0].id) elem.complete = true});
+            }else{
+                todoList.forEach(elem =>{if(elem.id == $(changeBox).parent()[0].id) elem.complete = false});
+            }
+            renderAll();
+        };
+
+        // $(document).on("change", ".done-todo", function (event) {
+        //     // alert(4111)
+        //    if($(this).is(":checked")){
+        //        console.log($(this).parent().id)
+        //        $(this).parent().addClass("checked");
+        //    }
+        //    //  console.log($(this));
+        //    //  console.log(event);
+        //    //  if($(this).is(":checked")){
+        //    //      todoList.forEach(elem=>{if(elem.id === event.currentTarget.parentElement.id) elem.complete = true});
+        //    //  }else{
+        //    //      todoList.forEach(elem =>{if(elem.id === event.currentTarget.parentElement.id) elem.complete = false});
+        //    //  }
+        //    //  renderAll();
+        // });
+
+
+        const renderAll = ()=>{
+            //console.log(buildTodoItem(todoList))
             $("ol").html(buildTodoItem());
         };
 
