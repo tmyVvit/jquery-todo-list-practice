@@ -1,4 +1,7 @@
+
+
 $(document)
+
     .ready(function () {
         let todoList = []
 
@@ -14,15 +17,40 @@ $(document)
 
          buildTodoItem =() => {
            return todoList.map(element =>
-             {return `<li id = ${element.id} class = ${element.complete?"checked":""}>
+             {return `<li id = ${element.id} class = ${element.complete?"checked":""} >
         <input name="done-todo" type="checkbox" class="done-todo" ${element.complete?"checked=\"checked\"":""} onchange="change(event)"> ${element.content}</li>`})};
 
 
+        $(document).on("click", "ol li", function () {
+            console.log(this);
+            console.log($(this));
+            $(this).attr("contenteditable", true)
+            // todoList.find(elem => elem.id === $(this)[0].id).content = $(this).val();
+            // renderAll();
+        .focus()
+                .keypress(function (event) {
+                    var keycode = (event.keyCode
+                        ? event.keyCode
+                        : event.which);
+                    if (keycode == '13') {
+                        // when editing and press enter, take off contenteditable attr and set outline
+                        // none to take the focus off
+                        event
+                            .target
+                            .blur();
+                        $(this).attr('contenteditable', 'false');
+
+                        todoList.find(element => element.id === $(this)[0].id).name = $(this).text();}
+
+                });
+        });
 
         $("#button").click(function () {
             add();
             renderAll();
         });
+
+
 
         window.change = (event)=>{
             console.log(event);
@@ -31,28 +59,12 @@ $(document)
             console.log(changeBox.parentElement.id);
             console.log(changeBox);
             if($(changeBox).is(":checked")){
-                todoList.forEach(elem=>{if(elem.id == $(changeBox).parent()[0].id) elem.complete = true});
+                todoList.find(elem=>elem.id == $(changeBox).parent()[0].id).complete = true;
             }else{
-                todoList.forEach(elem =>{if(elem.id == $(changeBox).parent()[0].id) elem.complete = false});
+                todoList.find(elem=>elem.id == $(changeBox).parent()[0].id).complete = false;
             }
             renderAll();
         };
-
-        // $(document).on("change", ".done-todo", function (event) {
-        //     // alert(4111)
-        //    if($(this).is(":checked")){
-        //        console.log($(this).parent().id)
-        //        $(this).parent().addClass("checked");
-        //    }
-        //    //  console.log($(this));
-        //    //  console.log(event);
-        //    //  if($(this).is(":checked")){
-        //    //      todoList.forEach(elem=>{if(elem.id === event.currentTarget.parentElement.id) elem.complete = true});
-        //    //  }else{
-        //    //      todoList.forEach(elem =>{if(elem.id === event.currentTarget.parentElement.id) elem.complete = false});
-        //    //  }
-        //    //  renderAll();
-        // });
 
 
         const renderAll = ()=>{
