@@ -1,5 +1,34 @@
 $(document)
     .ready(function () {
+        let todoList = []
+
+        function add(){
+            let todo = {};
+            todo.id = generateUUID();
+            todo.content = $('.input-text').val();
+            todo.complete = false;
+            todoList.push(todo);
+            $('.input-text').val("");
+            console.log(todo);
+        }
+
+         buildTodoItem =() => {
+           return todoList.map(element =>
+             {return `<li id = ${element.id} class = ${element.complete?"checked":""}>
+        <input name="done-todo" type="checkbox" class="done-todo"> ${element.content}</li>`})};
+
+
+
+        $("#button").click(function () {
+            add();
+            render();
+        });
+        
+
+        const render = ()=>{
+            console.log(buildTodoItem(todoList))
+            $("ol").html(buildTodoItem());
+        };
 
         function generateUUID() {
             /*jshint bitwise:false */
